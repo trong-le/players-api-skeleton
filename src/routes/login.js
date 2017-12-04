@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
+const jwtSecret = process.env.JWT_SECRET || 'mysecret';
 const router = new Router();
 
 /*
@@ -32,7 +33,7 @@ router.post('/login', async (req, res, next) => {
       throw err;
     }
 
-    const token = jwt.sign({ id: user[0] }, 'mysecret');
+    const token = jwt.sign({ id: user[0].id }, jwtSecret);
 
     res.status(200).send({ success: true, user: { ...user[0], id: String(user[0].id) }, token });
   } catch (err) {
