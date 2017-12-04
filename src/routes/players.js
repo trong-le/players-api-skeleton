@@ -16,7 +16,8 @@ router.post('/', async (req, res, next) => {
       first_name,
       last_name,
       rating,
-      handedness
+      handedness,
+      created_by
     } = req.body;
 
     if (!first_name || !last_name || !rating || !handedness) {
@@ -38,8 +39,8 @@ router.post('/', async (req, res, next) => {
       throw err;
     }
 
-    const players = await Player.create({ first_name, last_name, rating, handedness });
-    res.status(201).send({ success: true, players });
+    const player = await Player.create({ user_id: created_by, first_name, last_name, rating, handedness });
+    res.status(201).send({ success: true, player });
   } catch (err) {
     next(err);
   }

@@ -2,17 +2,19 @@ const db = require('../db');
 const isEmpty = require('lodash.isempty');
 
 module.exports = {
-  create: async ({ first_name, last_name, rating, handedness }) => {
-    const { players } = await db.query('INSERT INTO ping_pong.players (first_name, last_name, rating, handedness) VALUES ($1, $2, $3, $4)', [first_name, last_name, rating, handedness]);
-    return players;
+  create: async ({ user_id, first_name, last_name, rating, handedness }) => {
+    const id = (user_id === undefined || user_id === 'undefined') ? null : user_id;
+    const query = `INSERT INTO ping_pong.players(user_id, first_name, last_name, rating, handedness) VALUES (${id}, '${first_name}', '${last_name}', '${rating}', '${handedness}') RETURNING *`;
+    const { rows } = await db.query(query);
+    return rows[0];
   },
   getPlayers: async (user_id) => {
     const { players } = await db.query('SELECT * FROM ping_pong.players WHERE user_id = $1', [user_id]);
     return players;
   },
   find: async (first_name, last_name) => {
-    const { player } = await db.query('SELECT * FROM ping_pong.players WHERE first_name = $1 AND last_name = $2', [first_name, last_name]);
-    return player;
+    const { rows } = await db.query('SELECT * FROM ping_pong.players WHERE first_name = $1 AND last_name = $2', [first_name, last_name]);
+    return rows[0];
   },
   remove: async (names) => {
     let val;
