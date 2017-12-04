@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha test/**/*.spec.js"
+    "test": "mocha test/**/*.spec.js",
+    "test-compose": "docker-compose run --rm app npm test"
   },
   "author": "Steven White <steven@galchemy.codes>",
   "license": "ISC",
@@ -20,5 +21,16 @@
     "mocha": "^3.4.2",
     "sinon": "^2.3.4",
     "sinon-chai": "^2.11.0"
+  },
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0",
+    "lodash.find": "^4.6.0",
+    "lodash.isempty": "^4.4.0",
+    "lodash.omit": "^4.5.0",
+    "pg": "^7.4.0",
+    "request": "^2.83.0",
+    "uuid": "^3.1.0"
   }
 }

@@ -1,5 +1,4 @@
-
 module.exports = {
-  Player: {},
-  User: {}
+  Player: require('./player'),
+  User: require('./user')
 };
