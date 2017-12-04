@@ -21,6 +21,12 @@ TL;DR:
 
 ## Tests
 
+Tests are using docker with a postgres instance. If you don't have docker and docker-compose, follow these links: [Docker](https://docs.docker.com/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/).Now you can start testing with:
+```
+docker-compose up
+```
+
+Then run: 
 ```
 npm test
 ```
