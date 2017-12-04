@@ -35,9 +35,9 @@ router.post('/', async (req, res, next) => {
 
     const hashedPass = await bcrypt.hash(password, 10);
     const createdUser = await User.create({ first_name, last_name, email, password: hashedPass });
-    const token = jwt.sign({ id: email }, 'mysecret');
+    const token = jwt.sign({ id: createdUser[0].id }, 'mysecret');
 
-    res.status(201).send({ success: true, user: { ...createdUser, id: String(createdUser.id) }, token });
+    res.status(201).send({ success: true, user: { ...createdUser[0], id: String(createdUser[0].id) }, token });
   } catch (err) {
     next(err);
   }

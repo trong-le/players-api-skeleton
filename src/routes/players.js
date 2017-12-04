@@ -39,7 +39,7 @@ router.post('/', async (req, res, next) => {
       throw err;
     }
 
-    const player = await Player.create({ user_id: created_by, first_name, last_name, rating, handedness });
+    const player = await Player.create({ created_by: id, first_name, last_name, rating, handedness });
     res.status(201).send({ success: true, player });
   } catch (err) {
     next(err);
@@ -49,9 +49,20 @@ router.post('/', async (req, res, next) => {
 /*
  * Returns all players
  */
-router.get('/', async (req, res) => {
-  const players = await Player.getPlayers();
-  res.status(200).send({ success: true, players });
+router.get('/', async (req, res, next) => {
+  try {
+    const { id } = req.token;
+    const players = await Player.getPlayers(id);
+    const stringifiedPlayers = players.map((player) => {
+      return {
+        ...player,
+        id: String(player.id)
+      };
+    });
+    res.status(200).send({ success: true, players: stringifiedPlayers });
+  } catch (err) {
+    next(err);
+  }
 });
 
 /*
@@ -60,7 +71,7 @@ router.get('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const playerId = req.params.id;
   await db.query('DELETE FROM ping_pong.players WHERE user_id = $1', [playerId]);
-  res.status(201).send({ success: true });
+  res.status(200).send({ success: true });
 });
 
 module.exports = router;

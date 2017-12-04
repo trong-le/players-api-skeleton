@@ -14,7 +14,7 @@ create table if not exists users (
 
 create table if not exists players (
     id serial primary key,
-    user_id int null references users,
+    created_by int null references users on delete cascade,
     first_name text not null,
     last_name text not null,
     rating text not null,
