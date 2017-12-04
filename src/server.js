@@ -17,6 +17,7 @@ app.use((req, res, next) => {
 });
 
 // error handler
+// Need next for error handling levels down
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.send(err.message);

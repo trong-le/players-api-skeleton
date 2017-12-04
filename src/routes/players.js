@@ -1,7 +1,6 @@
 const { Router } = require('express');
 const { Player } = require('../models');
 const verifyJwt = require('../middlware/jwtverify');
-const db = require('../db');
 
 const router = new Router();
 
@@ -16,8 +15,7 @@ router.post('/', async (req, res, next) => {
       first_name,
       last_name,
       rating,
-      handedness,
-      created_by
+      handedness
     } = req.body;
 
     if (!first_name || !last_name || !rating || !handedness) {
@@ -68,10 +66,28 @@ router.get('/', async (req, res, next) => {
 /*
  * Delete player with given ID
  */
-router.delete('/:id', async (req, res) => {
-  const playerId = req.params.id;
-  await db.query('DELETE FROM ping_pong.players WHERE user_id = $1', [playerId]);
-  res.status(200).send({ success: true });
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.token;
+    const playerId = req.params.id;
+    const player = await Player.findById(playerId);
+
+    if (!player) {
+      const err = new Error('Player not found');
+      err.status = 404;
+      throw err;
+    }
+    if (id !== player.created_by) {
+      const err = new Error('Not authorized to delete player');
+      err.status = 404;
+      throw err;
+    }
+
+    await Player.remove({ id: playerId, created_by: id });
+    res.status(200).send({ success: true });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

@@ -1,10 +1,9 @@
 const { Router } = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const omit = require('lodash.omit');
 const { User } = require('../models');
-const db = require('../db');
 
+const jwtSecret = process.env.JWT_SECRET || 'mysecret';
 const router = new Router();
 
 /*
@@ -26,8 +25,8 @@ router.post('/', async (req, res, next) => {
       throw err;
     }
 
-    const user = await db.query(`SELECT * FROM ping_pong.users WHERE email = '${email}'`);
-    if (user.rows.length > 0 && user.rows[0].email === email) {
+    const user = await User.find(email);
+    if (user.length > 0 && user[0].email === email) {
       const err = new Error('User with email already exists');
       err.status = 409;
       throw err;
@@ -35,7 +34,7 @@ router.post('/', async (req, res, next) => {
 
     const hashedPass = await bcrypt.hash(password, 10);
     const createdUser = await User.create({ first_name, last_name, email, password: hashedPass });
-    const token = jwt.sign({ id: createdUser[0].id }, 'mysecret');
+    const token = jwt.sign({ id: createdUser[0].id }, jwtSecret);
 
     res.status(201).send({ success: true, user: { ...createdUser[0], id: String(createdUser[0].id) }, token });
   } catch (err) {
