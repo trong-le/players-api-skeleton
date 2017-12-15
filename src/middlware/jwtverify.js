@@ -1,10 +1,10 @@
-const promisify = require('es6-promisify');
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 
 const jwtSecret = process.env.JWT_SECRET || 'mysecret';
 
 module.exports = function verifyJwt() {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     // Pull header out
     const authHeader = req.header('Authorization');
     if (typeof authHeader !== 'undefined') {
@@ -13,12 +13,9 @@ module.exports = function verifyJwt() {
       const verify = promisify(jwt.verify, jwt);
 
       // Decoded token and add to request
-      verify(codedToken, jwtSecret)
-        .then((decodedToken) => {
-          req.token = decodedToken;
-          next();
-        })
-        .catch(next);
+      const decodedToken = await verify(codedToken, jwtSecret);
+      req.token = decodedToken;
+      next();
     } else {
       res.status(403).send();
     }
